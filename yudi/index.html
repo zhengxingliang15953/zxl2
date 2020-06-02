@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    </meta>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>雨滴</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+    <!-- <link rel="stylesheet" media="screen and (max-width: 768px)" href="./mobail.css"></link>
+    <link rel="stylesheet" media="screen and (min-width: 769px)" href="./pc.css"></link> -->
+</head>
+
+<body>
+    <canvas></canvas>
+</body>
+
+<!-- <script src="./ajax.js"></script> -->
+<script src="./jquery-2.1.4.min.js"></script>
+<script>
+    var h = document.documentElement.clientHeight;
+    var w = document.documentElement.clientWidth;
+    var canvas = document.getElementsByTagName('canvas')[0];
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, w, h);
+    ctx.lineCap = "round";
+    let yuList = [];
+    let cirList = [];
+    for (var i = 0; i < 15; i++) {
+        var startX = Math.random() * w - 7;
+        var startY = Math.random() * 40 - 20;
+        var endY = Random(h - 400, h - 20);
+        yuList.push(new YuDi(startX, startY, endY));
+    }
+    function YuDi(startX, startY, endY) {
+        this.startX = startX;
+        this.startY = startY;
+        this.endY = endY;
+        this.draw = function () {
+            ctx.fillStyle = '#00a1d6';
+            ctx.fillRect(this.startX, this.startY, 6, 20);
+        }
+        this.update = function () {
+            this.startY += 1.5;
+        }
+    }
+    function Circle(x, y, r) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.startR = 10;
+        this.draw = function () {
+            ctx.fillStyle = '#00a1d6';
+            ctx.strokeStyle = '#00a1d6';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.startR, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.stroke();
+        }
+        this.update = function () {
+            this.startR++;
+        }
+    }
+    function Random(min, max) {
+        var a = max - min;
+        return min + Math.random() * a;
+    }
+    setInterval(() => {
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fillRect(0, 0, w, h);
+        yuList.forEach((item, index) => {
+            item.draw();
+            item.update();
+            if (item.startY >= item.endY) {
+                var startX = Math.random() * w - 7;
+                var startY = Math.random() * 20 - 10;
+                var endY = Random(h - 400, h - 20);
+                yuList.push(new YuDi(startX, startY, endY));
+                cirList.push(new Circle(item.startX, item.endY, 100));
+                yuList.splice(index, 1);
+            }
+        })
+        cirList.forEach((item, index) => {
+            item.draw();
+            item.update();
+            if (item.startR >= item.r) {
+                cirList.splice(index, 1);
+            }
+        })
+    }, 10);
+</script>
+
+</html>
